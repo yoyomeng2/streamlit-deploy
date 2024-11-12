@@ -1,0 +1,55 @@
+name: Deploy via Snowflake CLI
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PYTHON_VERSION: "3.8"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: "Install Dependencies"
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: "Test"
+        shell: bash
+        run: |
+          pytest -vv
+
+      - name: "Create config"
+        shell: bash
+        run: |
+          mkdir -p ~/.snowflake
+          cp config.toml ~/.snowflake/config.toml
+          chmod 0600 ~/.snowflake/config.toml
+
+      - name: "Write private key"
+        shell: bash
+        env:
+          PRIVATE_KEY_FILE_CONTENT: ${{ secrets.PRIVATE_KEY_FILE_CONTENT }}
+        run: |
+          printf "%s" "$PRIVATE_KEY_FILE_CONTENT" > rsa_key.p8
+          chmod 0600 rsa_key.p8
+
+      - name: "Deploy the Streamlit app"
+        shell: bash
+        env:
+          PRIVATE_KEY_PASSPHRASE: ${{ secrets.PRIVATE_KEY_PASSPHRASE }}
+        run: |
+          snow app deploy --replace

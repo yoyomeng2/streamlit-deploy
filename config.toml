@@ -1,0 +1,11 @@
+default_connection_name = "my-snowflake-connection"
+
+[connections.my-snowflake-connection]
+account = "myaccount"
+user = "myuser"
+region = "us-east-1"
+database = "MY_APP_PKG"
+warehouse = "mywarehouse"
+role = "accountadmin"
+authenticator = "SNWOFLAKE_JWT"
+private_key_file = "rsa_key.p8"

@@ -1,0 +1,9 @@
+.packages/
+.venv/
+app.zip
+__pycache__
+venv
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+rsa_key*
