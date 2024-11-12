@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - main
-
+  workflow_dispatch:
 env:
-  PYTHON_VERSION: "3.8"
+  PYTEST_PYTHON_VERSION: "3.8"  # So that Streamlit tests match same python version that Snowflake provides
+  DEPLOY_PYTHON_VERSION: "3.10" # So that `snow streamlit deploy` can use the snowflake.yml schema that `snow init` creates
 
 jobs:
   build-and-deploy:
@@ -16,10 +17,10 @@ jobs:
       - name: "Checkout GitHub Action"
         uses: actions/checkout@v3
 
-      - name: Install Python
+      - name: Install Python for testing
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ env.PYTEST_PYTHON_VERSION }}
 
       - name: "Install Dependencies"
         shell: bash
@@ -30,6 +31,7 @@ jobs:
       - name: "Test"
         shell: bash
         run: |
+          pip install pytest
           pytest -vv
 
       - name: "Create config"
@@ -47,9 +49,16 @@ jobs:
           printf "%s" "$PRIVATE_KEY_FILE_CONTENT" > rsa_key.p8
           chmod 0600 rsa_key.p8
 
+      - name: Install Python for deployment
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.DEPLOY_PYTHON_VERSION }}
+
       - name: "Deploy the Streamlit app"
         shell: bash
         env:
+          SNOWFLAKE_CLI_VERSION: "3.1.0"
           PRIVATE_KEY_PASSPHRASE: ${{ secrets.PRIVATE_KEY_PASSPHRASE }}
         run: |
-          snow app deploy --replace
+          pip install snowflake-cli==$SNOWFLAKE_CLI_VERSION
+          snow streamlit deploy --replace
