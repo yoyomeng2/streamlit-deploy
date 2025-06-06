@@ -1,4 +1,4 @@
-name: Deploy via Snowflake CLI
+: Deploy via Snowflake CLI
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
       - main
   workflow_dispatch:
 env:
-  PYTHON_VERSION: "3.8"
-  SNOWFLAKE_CLI_VERSION: "3.1.0"
+  PYTHON_VERSION: "3.11"
+  SNOWFLAKE_CLI_VERSION: "3.9.0"
 
 jobs:
   build-and-deploy:
@@ -15,24 +15,30 @@ jobs:
     environment: dev
     steps:
       - name: "Checkout GitHub Action"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      - name: Install uv
+        shell: bash
+        run: |
+          curl -Ls https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-unknown-linux-gnu.tar.gz | tar -xz
+          sudo mv uv /usr/local/bin/uv
+          uv --version
+        
       - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
+        shell: bash
+        run: |
+          uv python install ${{ env.PYTHON_VERSION }}
+          uv run python --version
 
       - name: "Install Dependencies"
         shell: bash
         run: |
-          pip install -r requirements.txt
+          uv sync
 
       - name: "Test"
         shell: bash
         run: |
-          pip install pytest
-          pytest -vv
+          uv run pytest
 
       - name: "Create config"
         shell: bash
@@ -49,13 +55,14 @@ jobs:
           printf "%s" "$PRIVATE_KEY_FILE_CONTENT" > rsa_key.p8
           chmod 0600 rsa_key.p8
 
-      - uses: Snowflake-Labs/snowflake-cli-action@v1.5
+      - uses: snowflakedb/snowflake-cli-action@v1.5
         with:
           cli-version: ${{ env.SNOWFLAKE_CLI_VERSION }}
 
       - name: "Deploy the Streamlit app"
         shell: bash
         env:
+          SNOWFLAKE_CONNECTIONS
           PRIVATE_KEY_PASSPHRASE: ${{ secrets.PRIVATE_KEY_PASSPHRASE }}
         run: |
           snow streamlit deploy --replace
