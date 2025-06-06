@@ -342,3 +342,7 @@ Navigate to that link to see the app run.
 Congratulations! You have successfully deployed a Streamlit in Snowflake app using GitHub Actions.
 
 Proceed to the Streamlit Native App Deploy repo for a tutorial on how to deploy a Native App running Streamlit.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
