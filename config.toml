@@ -1,11 +1,11 @@
-default_connection_name = "my-snowflake-connection"
+default_connection_name = "myconnection"
 
-[connections.my-snowflake-connection]
+[connections.myconnection]
 account = "myaccount"
 user = "myuser"
 region = "us-east-1"
 database = "MY_APP_PKG"
 warehouse = "mywarehouse"
-role = "accountadmin"
+role = "myrole"
 authenticator = "SNOWFLAKE_JWT"
 private_key_file = "rsa_key.p8"
