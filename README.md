@@ -248,6 +248,11 @@ jobs:
       - name: "Deploy the Streamlit app"
         shell: bash
         env:
+          SNOWFLAKE_CONNECTIONS_MYCONNECTION_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCUNT }}
+          SNOWFLAKE_CONNECTIONS_MYCONNECTION_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_CONNECTIONS_MYCONNECTION_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_CONNECTIONS_MYCONNECTION_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_CONNECTIONS_MYCONNECTION_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           PRIVATE_KEY_PASSPHRASE: ${{ secrets.PRIVATE_KEY_PASSPHRASE }}
         run: |
           snow streamlit deploy --replace
@@ -263,11 +268,6 @@ First, from the Snowflake Key Pair Auth docs run these commands to generate the 
 openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out rsa_key.p8
 openssl rsa -in rsa_key.p8 -pubout -out rsa_key.pub
 ```
-
-Then set these repository secrets in GitHub:
-
-- set `PRIVATE_KEY_PASSPHRASE` to the passphrase you provided
-- set `PRIVATE_KEY_FILE_CONTENT` to the content of the rsa_key.p8 file you generated
 
 While you have the passphrase, export a local variable that we'll use in a bit:
 
@@ -323,6 +323,7 @@ To do this, set up the following GitHub Secrets in your repository:
 - `SNOWFLAKE_USER`: Your Snowflake user name (e.g., `myuser`).
 - `SNOWFLAKE_ROLE`: The role you want to use for the deployment (e.g., `myrole`).
 - `SNOWFLAKE_WAREHOUSE`: The warehouse you want to use for the deployment (e.g., `mywarehouse`).
+- `SNOWFLAKE_DATABASE`: The database you want to use for the deployment (e.g., `mydatabase`).
 
 > [!TIP]
 > Get the values for those from your local `~/.snowflake/config.toml` file. See the [GitHub Secrets documentation](https://docs.github.com/en/actions/security-guides/encrypted-secrets) for how to set these up.
