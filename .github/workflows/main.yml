@@ -1,4 +1,4 @@
-: Deploy via Snowflake CLI
+name: Deploy via Snowflake CLI
 
 on:
   push:
