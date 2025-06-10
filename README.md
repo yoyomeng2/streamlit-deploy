@@ -169,7 +169,9 @@ uv run pytest
 
 ### Deploying with GitHub Actions
 
-Now that we’ve validated our app locally, manually deployed to Snowflake, and tested, it’s time to automate deploying the Streamlit app to Snowflake with Actions. As we saw earlier, the Snowflake CLI makes this simple with snow streamlit deploy. Our Actions file will mimic the process we followed.
+Now that we’ve validated our app locally, manually deployed to Snowflake, and tested, it’s time to automate deploying the Streamlit app to Snowflake with Actions.
+As we saw earlier, the Snowflake CLI makes this simple with `snow streamlit deploy`.
+Our Actions file will mimic the process we followed.
 
 The file `.github/workflows/main.yml` checks out the code, installs dependencies, runs tests, configures a TOML file with a secret for Snowflake CLI authentication, and then deploys.
 
@@ -255,7 +257,7 @@ jobs:
           SNOWFLAKE_CONNECTIONS_MYCONNECTION_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
           PRIVATE_KEY_PASSPHRASE: ${{ secrets.PRIVATE_KEY_PASSPHRASE }}
         run: |
-          snow streamlit deploy --replace
+          snow streamlit deploy --project src --replace
 ```
 
 ### Key Pair Authentication Setup
@@ -295,7 +297,7 @@ Provide the passphrase you set earlier, and you should see a result similar to:
 +--------------------------------------------------------------+
 | key             | value                                      |
 |-----------------+--------------------------------------------|
-| Connection name | myconnection                    |
+| Connection name | myconnection                               |
 | Status          | OK                                         |
 | Host            | myaccount.us-east-1.snowflakecomputing.com |
 | Account         | myaccount                                  |
@@ -333,7 +335,7 @@ To do this, set up the following GitHub Secrets in your repository:
 Merge your code to your main branch to trigger your Action to deploy the app. With the app deployed you can get the URL by looking at your GitHub Action log or with Snowflake CLI:
 
 ```bash
-snow streamlit get-url streamlit_app
+snow streamlit get-url --project src streamlit_app
 ```
 
 Navigate to that link to see the app run.
@@ -342,7 +344,7 @@ Navigate to that link to see the app run.
 
 Congratulations! You have successfully deployed a Streamlit in Snowflake app using GitHub Actions.
 
-Proceed to the Streamlit Native App Deploy repo for a tutorial on how to deploy a Native App running Streamlit.
+Proceed to the [Streamlit Native App Streamlit Deploy](https://github.com/yoyomeng2/snowflake-native-app-streamlit-deploy) repo for a tutorial on how to deploy a Native App running Streamlit.
 
 ## License
 
